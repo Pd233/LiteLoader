@@ -259,7 +259,7 @@ void Listener<EventType>::call(EventType& event) {
             EventType copy = event; // Avoid modifying the original event
             try {
                 auto start = std::chrono::system_clock::now();
-                reinterpret_cast<void (*)(EventType&)>(callback)(copy);
+                callback(copy);
                 auto end = std::chrono::system_clock::now();
                 this->timing = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
             } catch (const seh_exception& e) {
@@ -276,7 +276,7 @@ void Listener<EventType>::call(EventType& event) {
         }
         try {
             auto start = std::chrono::system_clock::now();
-            reinterpret_cast<void (*)(EventType&)>(callback)(event);
+            callback(event);
             auto end = std::chrono::system_clock::now();
             this->timing = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         } catch (const seh_exception& e) {
