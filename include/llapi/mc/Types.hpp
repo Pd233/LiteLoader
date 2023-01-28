@@ -48,21 +48,15 @@ class UUID {
     uint64_t a, b;
 
 public:
-    UUID()
-    : a(RNG::rand<uint64_t>()), b(RNG::rand<uint64_t>()) {
-    }
-    UUID(uint64_t a, uint64_t b)
-    : a(a), b(b) {
-    }
+    UUID() : a(RNG::rand<uint64_t>()), b(RNG::rand<uint64_t>()) {}
+    UUID(uint64_t a, uint64_t b) : a(a), b(b) {}
     MCAPI std::string asString() const;
     MCAPI static UUID fromString(std::string const&);
     MCAPI bool isEmpty() const;
     MCAPI static UUID seedFromString(std::string const&);
     MCAPI static class mce::UUID EMPTY;
 
-    inline operator bool() const {
-        return !isEmpty();
-    }
+    inline operator bool() const { return !isEmpty(); }
 };
 
 enum class ColorPalette {
@@ -90,14 +84,10 @@ public:
     float g;
     float b;
     float a;
-    Color()
-    : r(0.0f), g(0.0f), b(0.0f), a(0.0f){};
-    Color(float r, float g, float b, float a = 1)
-    : r(r), g(g), b(b), a(a){};
-    Color(double r, double g, double b, double a = 1)
-    : r((float)r), g((float)g), b((float)b), a((float)a){};
-    Color(int ir, int ig, int ib, int ia = 255)
-    : r(ir / 255.0f), g(ig / 255.0f), b(ib / 255.0f), a(ia / 255.0f){};
+    Color() : r(0.0f), g(0.0f), b(0.0f), a(0.0f){};
+    Color(float r, float g, float b, float a = 1) : r(r), g(g), b(b), a(a){};
+    Color(double r, double g, double b, double a = 1) : r((float)r), g((float)g), b((float)b), a((float)a){};
+    Color(int ir, int ig, int ib, int ia = 255) : r(ir / 255.0f), g(ig / 255.0f), b(ib / 255.0f), a(ia / 255.0f){};
 
     LL_CONSTEXPR Color(std::string_view hex) {
         r = 0, g = 0, b = 0, a = 1;
@@ -133,9 +123,7 @@ public:
         return;
     };
 
-    inline operator bool() const {
-        return !(*this == NIL);
-    }
+    inline operator bool() const { return !(*this == NIL); }
 
     LIAPI double distanceTo(mce::Color const& dst) const;
     LIAPI std::string toConsoleCode(bool foreground = true) const;
@@ -161,25 +149,15 @@ public:
     MCAPI int toARGB(void) const;
     MCAPI std::string toHexString(void) const;
 
-    inline bool operator!=(const Color& c) const {
-        return !(c == *this);
-    }
+    inline bool operator!=(const Color& c) const { return !(c == *this); }
 
-    inline Color operator*(float c) const {
-        return {r * c, g * c, b * c, a * c};
-    }
+    inline Color operator*(float c) const { return {r * c, g * c, b * c, a * c}; }
 
-    inline Color operator/(float c) const {
-        return {r / c, g / c, b / c, a / c};
-    }
+    inline Color operator/(float c) const { return {r / c, g / c, b / c, a / c}; }
 
-    inline Color operator+(float c) const {
-        return {r + c, g + c, b + c, a + c};
-    }
+    inline Color operator+(float c) const { return {r + c, g + c, b + c, a + c}; }
 
-    inline Color operator-(float c) const {
-        return {r - c, g - c, b - c, a - c};
-    }
+    inline Color operator-(float c) const { return {r - c, g - c, b - c, a - c}; }
 
     constexpr Color& operator+=(float c) {
         r += c;
@@ -245,21 +223,13 @@ public:
         return *this;
     }
 
-    inline Color operator+(Color const& c) const {
-        return {r + c.r, g + c.g, b + c.b, a + c.a};
-    }
+    inline Color operator+(Color const& c) const { return {r + c.r, g + c.g, b + c.b, a + c.a}; }
 
-    inline Color operator*(Color const& c) const {
-        return {r * c.r, g * c.g, b * c.b, a * c.a};
-    }
+    inline Color operator*(Color const& c) const { return {r * c.r, g * c.g, b * c.b, a * c.a}; }
 
-    inline Color operator/(Color const& c) const {
-        return {r / c.r, g / c.g, b / c.b, a / c.a};
-    }
+    inline Color operator/(Color const& c) const { return {r / c.r, g / c.g, b / c.b, a / c.a}; }
 
-    inline Color operator-(Color const& c) const {
-        return {r - c.r, g - c.g, b - c.b, a - c.a};
-    }
+    inline Color operator-(Color const& c) const { return {r - c.r, g - c.g, b - c.b, a - c.a}; }
 
     inline static Color max(const Color& k, const Color& l) {
         return {std::max(k.r, l.r), std::max(k.g, l.g), std::max(k.b, l.b), std::max(k.a, l.a)};
@@ -269,13 +239,9 @@ public:
         return {std::min(k.r, l.r), std::min(k.g, l.g), std::min(k.b, l.b), std::min(k.a, l.a)};
     }
 
-    inline static Color lerp(const Color& k, const Color& l, float m) {
-        return k * (1.0f - m) + l * m;
-    }
+    inline static Color lerp(const Color& k, const Color& l, float m) { return k * (1.0f - m) + l * m; }
 
-    inline static Color mix(const Color& k, const Color& l, float m) {
-        return lerp(k, l, m);
-    }
+    inline static Color mix(const Color& k, const Color& l, float m) { return lerp(k, l, m); }
 };
 
 static std::unordered_map<ColorPalette, std::pair<char, Color>> const particleColors = {
@@ -299,9 +265,7 @@ static std::unordered_map<ColorPalette, std::pair<char, Color>> const particleCo
     // clang-format on
 };
 
-inline static const char getParticleColorType(ColorPalette const& p) {
-    return particleColors.at(p).first;
-}
+inline static const char getParticleColorType(ColorPalette const& p) { return particleColors.at(p).first; }
 
 }; // namespace mce
 
@@ -321,17 +285,11 @@ class AutomaticID {
     T id;
 
 public:
-    AutomaticID() {
-        id = 0;
-    }
+    AutomaticID() { id = 0; }
 
-    AutomaticID(T x) {
-        id = x;
-    }
+    AutomaticID(T x) { id = x; }
 
-    inline operator T() const {
-        return id;
-    }
+    inline operator T() const { return id; }
 };
 
 #include "ActorUniqueID.hpp"
@@ -346,13 +304,9 @@ class ActorRuntimeID {
 public:
     unsigned long long id;
 
-    inline unsigned long long get() const {
-        return id;
-    }
+    inline unsigned long long get() const { return id; }
 
-    inline operator unsigned long long() const {
-        return id;
-    }
+    inline operator unsigned long long() const { return id; }
 };
 // static_assert(std::is_pod_v<ActorRuntimeID>);
 
@@ -511,9 +465,7 @@ template <typename T, typename T2, int unk>
 class TypedServerNetId {
 public:
     T2 netId;
-    inline operator T2() {
-        return netId;
-    }
+    inline operator T2() { return netId; }
 };
 
 template <typename T, typename T2, int unk>
@@ -593,15 +545,9 @@ public:
             return *value;
         return nullptr;
     }
-    inline T& operator*() {
-        return *get();
-    }
-    inline T const& operator*() const {
-        return *get();
-    }
-    inline operator bool() const {
-        return get() != nullptr;
-    }
+    inline T& operator*() { return *get(); }
+    inline T const& operator*() const { return *get(); }
+    inline operator bool() const { return get() != nullptr; }
 };
 
 template <typename T>
@@ -651,15 +597,9 @@ public:
     //{
     //     *value = &val;
     // }
-    inline T& operator*() const {
-        return *value;
-    }
-    inline T* operator->() const {
-        return value;
-    }
-    inline operator bool() const {
-        return value != nullptr;
-    }
+    inline T& operator*() const { return *value; }
+    inline T* operator->() const { return value; }
+    inline operator bool() const { return value != nullptr; }
 };
 
 namespace cg {
@@ -701,25 +641,16 @@ class CommandSelectorResults {
 public:
     std::shared_ptr<std::vector<T*>> data;
 
-    auto begin() {
-        return data->begin();
-    }
+    auto begin() { return data->begin(); }
 
-    auto end() {
-        return data->end();
-    }
+    auto end() { return data->end(); }
 
-    auto count() const {
-        return data->size();
-    }
+    auto count() const { return data->size(); }
 
-    auto empty() const {
-        return data->empty();
-    }
+    auto empty() const { return data->empty(); }
 };
 
-enum class ActorType : __int32
-{
+enum class ActorType : __int32 {
     Undefined_2 = 0x1,
     TypeMask = 0xFF,
     Mob = 0x100,
@@ -904,3 +835,17 @@ enum class BlockActorType : int
 };
 
 */
+
+#include "Dimension.hpp"
+#include "Vec3.hpp"
+
+class ChangeDimensionRequest {
+public:
+    int mState;
+    AutomaticID<Dimension, int> mFromDimensionId;
+    AutomaticID<Dimension, int> mToDimensionId;
+    Vec3 mPosition;
+    bool mUsePortal;
+    bool mRespawn;
+    std::unique_ptr<CompoundTag> mAgentTag;
+};

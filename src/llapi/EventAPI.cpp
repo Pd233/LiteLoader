@@ -401,17 +401,6 @@ TInstanceHook(void, "?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@A
 }
 
 /////////////////// PlayerChangeDim ///////////////////
-class ChangeDimensionRequest {
-public:
-    int mState;
-    AutomaticID<Dimension, int> mFromDimensionId;
-    AutomaticID<Dimension, int> mToDimensionId;
-    Vec3 mPosition;
-    bool mUsePortal;
-    bool mRespawn;
-    std::unique_ptr<CompoundTag> mAgentTag;
-};
-
 TClasslessInstanceHook(bool, "?requestPlayerChangeDimension@Level@@UEAAXAEAVPlayer@@V?$unique_ptr@VChangeDimensionRequest@@U?$default_delete@VChangeDimensionRequest@@@std@@@std@@@Z",
                        Player* sp, std::unique_ptr<ChangeDimensionRequest> request) {
 
