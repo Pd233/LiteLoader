@@ -25,8 +25,10 @@ LIAPI void logEventError(const std::string& msg, const std::string& detail, cons
         }
     }
     logger.error(msg);
-    for (auto& line : SplitStrWithPattern(detail, "\n")) {
-        logger.error(line);
+    if (!detail.empty()) {
+        for (auto& line : SplitStrWithPattern(detail, "\n")) {
+            logger.error(line);
+        }
     }
     logger.error("- In event: {}", event);
     logger.error("- In listener: {} (Subscribed by Plugin <{}>)", listenerId, pluginName);

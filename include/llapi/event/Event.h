@@ -35,7 +35,14 @@ LIAPI void logEventError(const std::string& msg, const std::string& detail, cons
  * @note Don't try forcing to be executed first.
  * @see EventManager::addListener
  */
-enum class Priority : int8_t { Lowest = 0, Low = 1, Normal = 2, High = 3, Highest = 4, Monitor = 5 };
+enum class Priority : int8_t {
+    Lowest = 0,
+    Low = 1,
+    Normal = 2,
+    High = 3,
+    Highest = 4,
+    Monitor = 5
+};
 
 template <typename EventType>
 class EventManager;
@@ -50,14 +57,14 @@ class Listener {
     int id = -1;
     Priority priority = Priority::Normal;
     HMODULE plugin = nullptr;
-    void* callback = nullptr;
+    std::function<void(EventType&)> callback;
+    int64_t timing = 0;
 
     friend class EventManager<EventType>;
 
 public:
-    Listener(void* callback, Priority priority) {
-        this->callback = callback;
-        this->priority = priority;
+    Listener(std::function<void(EventType&)> callback, Priority priority)
+    : callback(std::move(callback)), priority(priority) {
         id = detail::getCurrentListenerId();
         plugin = GetCurrentModule();
     }
@@ -74,7 +81,7 @@ public:
      * @brief Call the event.
      * @param event Event instance to call.
      */
-    void call(EventType& event) const;
+    void call(EventType& event);
 
     /**
      * @brief Unsubscribe the event.
@@ -163,27 +170,22 @@ class Event {
 
 public:
     /**
-     * @brief Subscribe the event(const).
-     * @param callback The callback function(const).
+     * @brief Subscribe the event.
+     * @param callback The callback function.
      * @param priority The priority of the listener.
      * @return The listener instance.
      * @see Priority
+     * @par Example
+     * @code
+     * AEvent::subscribe([](AEvent& ev) {
+     *     // do something
+     *     ev.cancel();
+     * });
+     * @endcode
      */
-    static Listener<EventType> subscribe(void (*callback)(const EventType&), Priority priority = Priority::Normal) {
-        Listener<EventType> listener(reinterpret_cast<void*>(callback), priority);
-        subscribe(listener);
-        return listener;
-    }
-
-    /**
-     * @brief Subscribe the event(non-const).
-     * @param callback The callback function(non-const).
-     * @param priority The priority of the listener.
-     * @return The listener instance.
-     * @see Priority
-     */
-    static Listener<EventType> subscribe(void (*callback)(EventType&), Priority priority = Priority::Normal) {
-        Listener<EventType> listener(reinterpret_cast<void*>(callback), priority);
+    static Listener<EventType> subscribe(const std::function<void(EventType&)>& callback,
+                                         Priority priority = Priority::Normal) {
+        Listener<EventType> listener(callback, priority);
         subscribe(listener);
         return listener;
     }
@@ -251,18 +253,21 @@ public:
 };
 
 template <typename EventType>
-void Listener<EventType>::call(EventType& event) const {
+void Listener<EventType>::call(EventType& event) {
     if (callback) {
         if (priority >= Priority::Monitor) {
             EventType copy = event; // Avoid modifying the original event
             try {
+                auto start = std::chrono::system_clock::now();
                 reinterpret_cast<void (*)(EventType&)>(callback)(copy);
+                auto end = std::chrono::system_clock::now();
+                this->timing = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
             } catch (const seh_exception& e) {
-                detail::logEventError("SEH Exception Occurs!", e.what(), typeid(EventType).name(), id, plugin);
+                detail::logEventError("SEH Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
             } catch (const std::exception& e) {
-                detail::logEventError("C++ Exception Occurs!", e.what(), typeid(EventType).name(), id, plugin);
+                detail::logEventError("C++ Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
             } catch (...) {
-                detail::logEventError("C++ Exception Occurs!", "Unknown", typeid(EventType).name(), id, plugin);
+                detail::logEventError("C++ Exception Occurs!", "", typeid(EventType).name(), id, plugin);
             }
             if constexpr (std::is_base_of_v<CancellableEvent<EventType>, EventType>) {
                 event.setCancelled(copy.isCancelled());
@@ -270,13 +275,16 @@ void Listener<EventType>::call(EventType& event) const {
             return;
         }
         try {
+            auto start = std::chrono::system_clock::now();
             reinterpret_cast<void (*)(EventType&)>(callback)(event);
+            auto end = std::chrono::system_clock::now();
+            this->timing = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         } catch (const seh_exception& e) {
-            detail::logEventError("SEH Exception Occurs!", e.what(), typeid(EventType).name(), id, plugin);
+            detail::logEventError("SEH Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
         } catch (const std::exception& e) {
-            detail::logEventError("C++ Exception Occurs!", e.what(), typeid(EventType).name(), id, plugin);
+            detail::logEventError("C++ Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
         } catch (...) {
-            detail::logEventError("C++ Exception Occurs!", "Unknown", typeid(EventType).name(), id, plugin);
+            detail::logEventError("C++ Exception Occurs!", "", typeid(EventType).name(), id, plugin);
         }
     }
 }
