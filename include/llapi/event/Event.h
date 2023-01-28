@@ -5,9 +5,15 @@
  * @copyright Copyright (c) 2020-present LiteLDev.
  */
 #pragma once
-#include <llapi/Global.h>
-#include <llapi/utils/WinHelper.h>
+
 #include <list>
+#include <set>
+#include <string>
+#include <functional>
+
+#include <magic_enum.hpp>
+
+#include "llapi/utils/WinHelper.h"
 
 namespace ll::event {
 
@@ -35,7 +41,7 @@ LIAPI void logEventError(const std::string& msg, const std::string& detail, cons
  * @note Don't try forcing to be executed first.
  * @see EventManager::addListener
  */
-enum class Priority : int8_t {
+enum class Priority : uint8_t {
     Lowest = 0,
     Low = 1,
     Normal = 2,
@@ -91,6 +97,13 @@ public:
     bool operator==(const Listener& other) const {
         return id == other.id;
     }
+
+    bool operator<(const Listener& other) const {
+        if (this->priority == other.priority) {
+            return this->id < other.id;
+        }
+        return magic_enum::enum_integer(this->priority) < magic_enum::enum_integer(other.priority);
+    }
 };
 
 /**
@@ -100,7 +113,7 @@ public:
  */
 template <typename EventType>
 class EventManager {
-    static std::list<Listener<EventType>> listenerList;
+    static std::set<Listener<EventType>> listenerList;
 
 public:
     /**
@@ -108,17 +121,10 @@ public:
      * @param listener The listener instance to add.
      */
     static void addListener(const Listener<EventType>& listener) {
-        auto priority = (int8_t)listener.priority;
-        if (priority < (int8_t)Priority::Lowest || priority > (int8_t)Priority::Monitor) {
-            priority = (int8_t)Priority::Normal;
+        if (listener.priority > Priority::Monitor) {
+            listener->priority = Priority::Normal;
         }
-        for (auto it = listenerList.begin(); it != listenerList.end(); ++it) {
-            if ((int8_t)it->priority > priority) {
-                listenerList.insert(it, listener);
-                return;
-            }
-        }
-        listenerList.push_back(listener);
+        listenerList.insert(listener);
     }
 
     /**
@@ -139,7 +145,7 @@ public:
         if (res != listenerList.end()) {
             return *res;
         }
-        return {};
+        return std::nullopt;
     }
 
     /**
@@ -224,8 +230,8 @@ public:
  */
 template <typename EventType>
 class CancellableEvent : public Event<EventType> {
-
-    bool cancelled_ = false;
+private:
+    bool cancelled = false;
 
 public:
     /**
@@ -233,7 +239,7 @@ public:
      * @return True if the event is cancelled.
      */
     [[nodiscard]] bool isCancelled() const {
-        return cancelled_;
+        return cancelled;
     }
 
     /**
@@ -241,42 +247,24 @@ public:
      * @param cancelled True if the event is cancelled.
      */
     void setCancelled(bool cancelled) {
-        cancelled_ = cancelled;
+        this->cancelled = cancelled;
     }
 
     /**
      * @brief Cancel the event.
      */
     void cancel() {
-        cancelled_ = true;
+        cancelled = true;
     }
 };
 
 template <typename EventType>
 void Listener<EventType>::call(EventType& event) {
-    if (callback) {
-        if (priority >= Priority::Monitor) {
-            EventType copy = event; // Avoid modifying the original event
-            try {
-                auto start = std::chrono::system_clock::now();
-                callback(copy);
-                auto end = std::chrono::system_clock::now();
-                this->timing = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-            } catch (const seh_exception& e) {
-                detail::logEventError("SEH Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
-            } catch (const std::exception& e) {
-                detail::logEventError("C++ Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
-            } catch (...) {
-                detail::logEventError("C++ Exception Occurs!", "", typeid(EventType).name(), id, plugin);
-            }
-            if constexpr (std::is_base_of_v<CancellableEvent<EventType>, EventType>) {
-                event.setCancelled(copy.isCancelled());
-            }
-            return;
-        }
+    if (priority >= Priority::Monitor) {
+        EventType copy = event; // Avoid modifying the original event
         try {
             auto start = std::chrono::system_clock::now();
-            callback(event);
+            callback(copy);
             auto end = std::chrono::system_clock::now();
             this->timing = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         } catch (const seh_exception& e) {
@@ -286,6 +274,22 @@ void Listener<EventType>::call(EventType& event) {
         } catch (...) {
             detail::logEventError("C++ Exception Occurs!", "", typeid(EventType).name(), id, plugin);
         }
+        if constexpr (std::is_base_of_v<CancellableEvent<EventType>, EventType>) {
+            event.setCancelled(copy.isCancelled());
+        }
+        return;
+    }
+    try {
+        auto start = std::chrono::system_clock::now();
+        callback(event);
+        auto end = std::chrono::system_clock::now();
+        this->timing = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    } catch (const seh_exception& e) {
+        detail::logEventError("SEH Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
+    } catch (const std::exception& e) {
+        detail::logEventError("C++ Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
+    } catch (...) {
+        detail::logEventError("C++ Exception Occurs!", "", typeid(EventType).name(), id, plugin);
     }
 }
 

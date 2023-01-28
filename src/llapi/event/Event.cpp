@@ -37,6 +37,6 @@ LIAPI void logEventError(const std::string& msg, const std::string& detail, cons
 } // namespace detail
 
 template <typename EventType>
-std::list<Listener<EventType>> EventManager<EventType>::listenerList;
+std::set<Listener<EventType>> EventManager<EventType>::listenerList;
 
 } // namespace ll::event
