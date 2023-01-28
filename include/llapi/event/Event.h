@@ -35,14 +35,7 @@ LIAPI void logEventError(const std::string& msg, const std::string& detail, cons
  * @note Don't try forcing to be executed first.
  * @see EventManager::addListener
  */
-enum class Priority : int8_t {
-    Lowest = 0,
-    Low = 1,
-    Normal = 2,
-    High = 3,
-    Highest = 4,
-    Monitor = 5
-};
+enum class Priority : int8_t { Lowest = 0, Low = 1, Normal = 2, High = 3, Highest = 4, Monitor = 5 };
 
 template <typename EventType>
 class EventManager;
@@ -87,6 +80,10 @@ public:
      * @brief Unsubscribe the event.
      */
     void unsubscribe();
+
+    bool operator==(const Listener& other) const {
+        return id == other.id;
+    }
 };
 
 /**
@@ -104,8 +101,8 @@ public:
      * @param listener The listener instance to add.
      */
     static void addListener(const Listener<EventType>& listener) {
-        int8_t priority = listener.priority;
-        if (priority < 0 || priority > 5) {
+        auto priority = (int8_t)listener.priority;
+        if (priority < (int8_t)Priority::Lowest || priority > (int8_t)Priority::Monitor) {
             priority = (int8_t)Priority::Normal;
         }
         for (auto it = listenerList.begin(); it != listenerList.end(); ++it) {
@@ -130,8 +127,8 @@ public:
      * @param id The listener id.
      */
     static std::optional<Listener<EventType>> getListener(int id) noexcept {
-        auto res = std::find(listenerList.begin(), listenerList.end(),
-                             [id](const Listener<EventType>& listener) { return listener.id == id; });
+        auto res = std::find_if(listenerList.begin(), listenerList.end(),
+                                [id](const Listener<EventType>& listener) { return listener.id == id; });
         if (res != listenerList.end()) {
             return *res;
         }

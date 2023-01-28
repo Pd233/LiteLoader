@@ -56,7 +56,9 @@ public:
     MCAPI static UUID seedFromString(std::string const&);
     MCAPI static class mce::UUID EMPTY;
 
-    inline operator bool() const { return !isEmpty(); }
+    inline operator bool() const {
+        return !isEmpty();
+    }
 };
 
 enum class ColorPalette {
@@ -123,7 +125,9 @@ public:
         return;
     };
 
-    inline operator bool() const { return !(*this == NIL); }
+    inline operator bool() const {
+        return !(*this == NIL);
+    }
 
     LIAPI double distanceTo(mce::Color const& dst) const;
     LIAPI std::string toConsoleCode(bool foreground = true) const;
@@ -149,15 +153,25 @@ public:
     MCAPI int toARGB(void) const;
     MCAPI std::string toHexString(void) const;
 
-    inline bool operator!=(const Color& c) const { return !(c == *this); }
+    inline bool operator!=(const Color& c) const {
+        return !(c == *this);
+    }
 
-    inline Color operator*(float c) const { return {r * c, g * c, b * c, a * c}; }
+    inline Color operator*(float c) const {
+        return {r * c, g * c, b * c, a * c};
+    }
 
-    inline Color operator/(float c) const { return {r / c, g / c, b / c, a / c}; }
+    inline Color operator/(float c) const {
+        return {r / c, g / c, b / c, a / c};
+    }
 
-    inline Color operator+(float c) const { return {r + c, g + c, b + c, a + c}; }
+    inline Color operator+(float c) const {
+        return {r + c, g + c, b + c, a + c};
+    }
 
-    inline Color operator-(float c) const { return {r - c, g - c, b - c, a - c}; }
+    inline Color operator-(float c) const {
+        return {r - c, g - c, b - c, a - c};
+    }
 
     constexpr Color& operator+=(float c) {
         r += c;
@@ -223,13 +237,21 @@ public:
         return *this;
     }
 
-    inline Color operator+(Color const& c) const { return {r + c.r, g + c.g, b + c.b, a + c.a}; }
+    inline Color operator+(Color const& c) const {
+        return {r + c.r, g + c.g, b + c.b, a + c.a};
+    }
 
-    inline Color operator*(Color const& c) const { return {r * c.r, g * c.g, b * c.b, a * c.a}; }
+    inline Color operator*(Color const& c) const {
+        return {r * c.r, g * c.g, b * c.b, a * c.a};
+    }
 
-    inline Color operator/(Color const& c) const { return {r / c.r, g / c.g, b / c.b, a / c.a}; }
+    inline Color operator/(Color const& c) const {
+        return {r / c.r, g / c.g, b / c.b, a / c.a};
+    }
 
-    inline Color operator-(Color const& c) const { return {r - c.r, g - c.g, b - c.b, a - c.a}; }
+    inline Color operator-(Color const& c) const {
+        return {r - c.r, g - c.g, b - c.b, a - c.a};
+    }
 
     inline static Color max(const Color& k, const Color& l) {
         return {std::max(k.r, l.r), std::max(k.g, l.g), std::max(k.b, l.b), std::max(k.a, l.a)};
@@ -239,9 +261,13 @@ public:
         return {std::min(k.r, l.r), std::min(k.g, l.g), std::min(k.b, l.b), std::min(k.a, l.a)};
     }
 
-    inline static Color lerp(const Color& k, const Color& l, float m) { return k * (1.0f - m) + l * m; }
+    inline static Color lerp(const Color& k, const Color& l, float m) {
+        return k * (1.0f - m) + l * m;
+    }
 
-    inline static Color mix(const Color& k, const Color& l, float m) { return lerp(k, l, m); }
+    inline static Color mix(const Color& k, const Color& l, float m) {
+        return lerp(k, l, m);
+    }
 };
 
 static std::unordered_map<ColorPalette, std::pair<char, Color>> const particleColors = {
@@ -265,7 +291,9 @@ static std::unordered_map<ColorPalette, std::pair<char, Color>> const particleCo
     // clang-format on
 };
 
-inline static const char getParticleColorType(ColorPalette const& p) { return particleColors.at(p).first; }
+inline static const char getParticleColorType(ColorPalette const& p) {
+    return particleColors.at(p).first;
+}
 
 }; // namespace mce
 
@@ -285,11 +313,17 @@ class AutomaticID {
     T id;
 
 public:
-    AutomaticID() { id = 0; }
+    AutomaticID() {
+        id = 0;
+    }
 
-    AutomaticID(T x) { id = x; }
+    AutomaticID(T x) {
+        id = x;
+    }
 
-    inline operator T() const { return id; }
+    inline operator T() const {
+        return id;
+    }
 };
 
 #include "ActorUniqueID.hpp"
@@ -304,9 +338,13 @@ class ActorRuntimeID {
 public:
     unsigned long long id;
 
-    inline unsigned long long get() const { return id; }
+    inline unsigned long long get() const {
+        return id;
+    }
 
-    inline operator unsigned long long() const { return id; }
+    inline operator unsigned long long() const {
+        return id;
+    }
 };
 // static_assert(std::is_pod_v<ActorRuntimeID>);
 
@@ -465,7 +503,9 @@ template <typename T, typename T2, int unk>
 class TypedServerNetId {
 public:
     T2 netId;
-    inline operator T2() { return netId; }
+    inline operator T2() {
+        return netId;
+    }
 };
 
 template <typename T, typename T2, int unk>
@@ -545,9 +585,15 @@ public:
             return *value;
         return nullptr;
     }
-    inline T& operator*() { return *get(); }
-    inline T const& operator*() const { return *get(); }
-    inline operator bool() const { return get() != nullptr; }
+    inline T& operator*() {
+        return *get();
+    }
+    inline T const& operator*() const {
+        return *get();
+    }
+    inline operator bool() const {
+        return get() != nullptr;
+    }
 };
 
 template <typename T>
@@ -597,9 +643,15 @@ public:
     //{
     //     *value = &val;
     // }
-    inline T& operator*() const { return *value; }
-    inline T* operator->() const { return value; }
-    inline operator bool() const { return value != nullptr; }
+    inline T& operator*() const {
+        return *value;
+    }
+    inline T* operator->() const {
+        return value;
+    }
+    inline operator bool() const {
+        return value != nullptr;
+    }
 };
 
 namespace cg {
@@ -641,13 +693,21 @@ class CommandSelectorResults {
 public:
     std::shared_ptr<std::vector<T*>> data;
 
-    auto begin() { return data->begin(); }
+    auto begin() {
+        return data->begin();
+    }
 
-    auto end() { return data->end(); }
+    auto end() {
+        return data->end();
+    }
 
-    auto count() const { return data->size(); }
+    auto count() const {
+        return data->size();
+    }
 
-    auto empty() const { return data->empty(); }
+    auto empty() const {
+        return data->empty();
+    }
 };
 
 enum class ActorType : __int32 {
