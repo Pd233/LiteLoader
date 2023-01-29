@@ -83,10 +83,10 @@ jobs:
         uses: actions/upload-artifact@v3.1.0
         with:
           name: LiteLoader
-          path: ${{ github.workspace }}\build\LiteLoader.dll
+          path: ${{ github.workspace }}\build\Release\LiteLoader.dll
 
       - name: Upload PDB
         uses: actions/upload-artifact@v3.1.0
         with:
           name: PDB
-          path: ${{ github.workspace }}\build\LiteLoader.pdb
+          path: ${{ github.workspace }}\build\Release\LiteLoader.pdb
