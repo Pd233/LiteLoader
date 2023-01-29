@@ -340,7 +340,7 @@ TClasslessInstanceHook(void, "?sendLoginMessageLocal@ServerNetworkHandler@@QEAAX
 TInstanceHook(bool, "?setLocalPlayerAsInitialized@ServerPlayer@@QEAAXXZ",
               ServerPlayer) {
     ll::event::PlayerJoinEvent event(this);
-    ll::event::EventManager<ll::event::PlayerJoinEvent>::call(event);
+    ll::event::EventManager<ll::event::PlayerJoinEvent>::fireEvent(event);
     IF_LISTENED(PlayerJoinEvent) {
         PlayerJoinEvent ev{};
         ev.mPlayer = this;

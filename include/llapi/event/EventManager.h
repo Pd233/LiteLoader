@@ -41,9 +41,9 @@ public:
 
     /**
      * @brief Call the event.
-     * @param event Event instance to call.
+     * @param event Event instance to fireEvent.
      */
-    LIAPI static void call(EventType& event);
+    LIAPI static void fireEvent(EventType& event);
 };
 
 } // namespace ll::event

@@ -39,7 +39,7 @@ bool EventManager<EventType>::hasListener() noexcept {
 }
 
 template <typename EventType>
-void EventManager<EventType>::call(EventType& event) {
+void EventManager<EventType>::fireEvent(EventType& event) {
     for (auto& listener : listenerList) {
         const_cast<Listener<EventType>&>(listener).call(event);
     }
