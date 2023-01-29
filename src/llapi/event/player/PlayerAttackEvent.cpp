@@ -9,6 +9,9 @@
 namespace ll::event {
 namespace player {
 
+PlayerAttackEvent::PlayerAttackEvent(Player* player, Player* target, float damage)
+: player(player), target(target), damage(damage) {}
+
 LL_GETTER_IMPL(PlayerAttackEvent, Player*, player, getPlayer);
 LL_GETTER_IMPL(PlayerAttackEvent, Player*, target, getTarget);
 LL_GETTER_IMPL(PlayerAttackEvent, float, damage, getDamage);

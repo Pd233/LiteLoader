@@ -467,22 +467,22 @@ THook(void,
 }
 
 /////////////////// PlayerAttackEntity ///////////////////
-TInstanceHook(bool, "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
-              Player, Actor* ac, int* damageCause) {
-    IF_LISTENED(PlayerAttackEvent) {
-        PlayerAttackEvent ev{};
-        ev.mPlayer = this;
-        ev.mTarget = ac;
-        ev.mAttackDamage = *damageCause;
-        if (!ev.call())
-            return false;
-
-        ac = ev.mTarget;
-        *damageCause = ev.mAttackDamage;
-    }
-    IF_LISTENED_END(PlayerAttackEvent)
-    return original(this, ac, damageCause);
-}
+//TInstanceHook(bool, "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
+//              Player, Actor* ac, int* damageCause) {
+//    IF_LISTENED(PlayerAttackEvent) {
+//        PlayerAttackEvent ev{};
+//        ev.mPlayer = this;
+//        ev.mTarget = ac;
+//        ev.mAttackDamage = *damageCause;
+//        if (!ev.call())
+//            return false;
+//
+//        ac = ev.mTarget;
+//        *damageCause = ev.mAttackDamage;
+//    }
+//    IF_LISTENED_END(PlayerAttackEvent)
+//    return original(this, ac, damageCause);
+//}
 
 /////////////////// PlayerAttackBlock ///////////////////
 TInstanceHook(bool, "?attack@Block@@QEBA_NPEAVPlayer@@AEBVBlockPos@@@Z",
