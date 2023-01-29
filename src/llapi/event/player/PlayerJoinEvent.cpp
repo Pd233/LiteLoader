@@ -1,6 +1,6 @@
 #include <llapi/event/player/PlayerJoinEvent.h>
 #include <llapi/event/EventManager.h>
-#include <llapi/mc/Player.hpp>
+#include <llapi/mc/ServerPlayer.hpp>
 
 #include <llapi/event/impl/EventImpl.inc>
 #include <llapi/event/impl/EventManagerImpl.inc>
