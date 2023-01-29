@@ -337,20 +337,20 @@ TClasslessInstanceHook(void, "?sendLoginMessageLocal@ServerNetworkHandler@@QEAAX
 #include <llapi/event/player/PlayerJoinEvent.h>
 #include <llapi/event/EventManager.h>
 /////////////////// PlayerJoin ///////////////////
-TInstanceHook(bool, "?setLocalPlayerAsInitialized@ServerPlayer@@QEAAXXZ",
-              ServerPlayer) {
-    ll::event::player::PlayerJoinEvent event(this);
-    ll::event::EventManager<ll::event::player::PlayerJoinEvent>::fireEvent(event);
-    IF_LISTENED(PlayerJoinEvent) {
-        PlayerJoinEvent ev{};
-        ev.mPlayer = this;
-
-        if (!ev.call())
-            return false;
-    }
-    IF_LISTENED_END(PlayerJoinEvent)
-    return original(this);
-}
+//TInstanceHook(bool, "?setLocalPlayerAsInitialized@ServerPlayer@@QEAAXXZ",
+//              ServerPlayer) {
+//    ll::event::player::PlayerJoinEvent event(this);
+//    ll::event::EventManager<ll::event::player::PlayerJoinEvent>::fireEvent(event);
+//    IF_LISTENED(PlayerJoinEvent) {
+//        PlayerJoinEvent ev{};
+//        ev.mPlayer = this;
+//
+//        if (!ev.call())
+//            return false;
+//    }
+//    IF_LISTENED_END(PlayerJoinEvent)
+//    return original(this);
+//}
 
 
 /////////////////// PlayerLeft ///////////////////

@@ -19,3 +19,12 @@ template class EventManager<player::PlayerJoinEvent>;
 template class Listener<player::PlayerJoinEvent>;
 
 } // namespace ll::event
+
+TInstanceHook(bool, "?setLocalPlayerAsInitialized@ServerPlayer@@QEAAXXZ", ServerPlayer) {
+    ll::event::player::PlayerJoinEvent event(this);
+    ll::event::EventManager<ll::event::player::PlayerJoinEvent>::fireEvent(event);
+    if (event.isCancelled()) {
+        return false;
+    }
+    return original(this);
+}
