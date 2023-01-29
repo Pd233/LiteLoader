@@ -11,12 +11,20 @@ public:                                                                         
     LL_RO_MEMBER(type, name, getter)                                                                                   \
     LIAPI void setter(type _val);
 
-#define LL_GETTER_IMPL(clazz, type, name, getter)                                                                   \
+#define LL_GETTER_IMPL(clazz, type, name, getter)                                                                      \
     type clazz::getter() const {                                                                                       \
         return name;                                                                                                   \
     }
 
-#define LL_SETTER_IMPL(clazz, type, name, setter)                                                           \
+#define LL_SETTER_IMPL(clazz, type, name, setter)                                                                      \
     void clazz::setter(type _val) {                                                                                    \
         this->name = _val;                                                                                             \
     }
+
+#define LL_DELETE_COPY(clazz)                                                                                          \
+    clazz(const clazz&) = delete;                                                                                      \
+    clazz& operator=(const clazz&) = delete;
+
+#define LL_DELETE_MOVE(clazz)                                                                                          \
+    clazz(clazz&&) = delete;                                                                                           \
+    clazz& operator=(clazz&&) = delete;

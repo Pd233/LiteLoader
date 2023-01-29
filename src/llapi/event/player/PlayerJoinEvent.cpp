@@ -6,7 +6,7 @@
 #include <llapi/event/impl/EventManagerImpl.inc>
 #include <llapi/event/impl/ListenerImpl.inc>
 
-namespace ll::event {
+namespace ll::event::player {
 
 PlayerJoinEvent::PlayerJoinEvent(Player* player) : player(player) {}
 
@@ -16,4 +16,4 @@ template class Event<PlayerJoinEvent>;
 template class EventManager<PlayerJoinEvent>;
 template class Listener<PlayerJoinEvent>;
 
-} // namespace ll::event
+} // namespace ll::event::player
