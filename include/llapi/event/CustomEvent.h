@@ -11,17 +11,19 @@ namespace ll::event {
  * This may cause ABI incompatibility if event api expands.
  */
 class CustomEvent : public Event<CustomEvent> {
-    constexpr static int32_t CURRENT_CUSTOM_EVENT_API_VERSION = 1;
-
-private:
+public:
     [[nodiscard]] virtual int32_t getApiVersion() const = 0;
+
     [[nodiscard]] virtual ll::Plugin getPlugin() const = 0;
+
     [[nodiscard]] virtual std::string getEventName() const = 0;
+
     [[nodiscard]] virtual void* getContentPtr() const = 0;
 
-public:
+    constexpr static int32_t CURRENT_CUSTOM_EVENT_API_VERSION = 1;
+
     template <class ContentType>
-    ContentType* getContent() {
+    inline ContentType* getContent() {
         return reinterpret_cast<ContentType*>(getContentPtr());
     }
 };
