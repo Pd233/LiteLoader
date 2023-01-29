@@ -6,14 +6,16 @@
 #include <llapi/event/impl/EventManagerImpl.inc>
 #include <llapi/event/impl/ListenerImpl.inc>
 
-namespace ll::event::player {
+namespace ll::event {
+namespace player {
 
 PlayerJoinEvent::PlayerJoinEvent(Player* player) : player(player) {}
 
 LL_GETTER_IMPL(PlayerJoinEvent, Player*, player, getPlayer);
+} // namespace player
 
-template class Event<PlayerJoinEvent>;
-template class EventManager<PlayerJoinEvent>;
-template class Listener<PlayerJoinEvent>;
+template class Event<player::PlayerJoinEvent>;
+template class EventManager<player::PlayerJoinEvent>;
+template class Listener<player::PlayerJoinEvent>;
 
-} // namespace ll::event::player
+} // namespace ll::event

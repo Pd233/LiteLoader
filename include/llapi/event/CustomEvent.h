@@ -12,6 +12,8 @@ namespace ll::event {
  */
 class CustomEvent : public Event<CustomEvent> {
 public:
+    virtual ~CustomEvent() = default;
+
     [[nodiscard]] virtual int32_t getApiVersion() const = 0;
 
     [[nodiscard]] virtual ll::Plugin getPlugin() const = 0;
