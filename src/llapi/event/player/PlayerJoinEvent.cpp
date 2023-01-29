@@ -12,11 +12,12 @@ namespace player {
 PlayerJoinEvent::PlayerJoinEvent(Player* player) : player(player) {}
 
 LL_GETTER_IMPL(PlayerJoinEvent, Player*, player, getPlayer);
+
 } // namespace player
 
 template class Event<player::PlayerJoinEvent>;
-template class EventManager<player::PlayerJoinEvent>;
 template class Listener<player::PlayerJoinEvent>;
+template class EventManager<player::PlayerJoinEvent>;
 
 } // namespace ll::event
 

@@ -319,20 +319,20 @@ DECLARE_EVENT_DATA(PlayerSwingEvent);
 
 
 /////////////////// PreJoin ///////////////////
-TClasslessInstanceHook(void, "?sendLoginMessageLocal@ServerNetworkHandler@@QEAAXAEBVNetworkIdentifier@@"
-                             "AEBVConnectionRequest@@AEAVServerPlayer@@@Z",
-                       NetworkIdentifier* Ni, ConnectionRequest* a3, ServerPlayer* sp) {
-    IF_LISTENED(PlayerPreJoinEvent) {
-        PlayerPreJoinEvent ev{};
-        ev.mPlayer = sp;
-        ev.mIP = Ni->getIP();
-        ev.mXUID = sp->getXuid();
-        if (!ev.call())
-            return;
-    }
-    IF_LISTENED_END(PlayerPreJoinEvent)
-    return original(this, Ni, a3, sp);
-}
+//TClasslessInstanceHook(void, "?sendLoginMessageLocal@ServerNetworkHandler@@QEAAXAEBVNetworkIdentifier@@"
+//                             "AEBVConnectionRequest@@AEAVServerPlayer@@@Z",
+//                       NetworkIdentifier* Ni, ConnectionRequest* a3, ServerPlayer* sp) {
+//    IF_LISTENED(PlayerPreJoinEvent) {
+//        PlayerPreJoinEvent ev{};
+//        ev.mPlayer = sp;
+//        ev.mIP = Ni->getIP();
+//        ev.mXUID = sp->getXuid();
+//        if (!ev.call())
+//            return;
+//    }
+//    IF_LISTENED_END(PlayerPreJoinEvent)
+//    return original(this, Ni, a3, sp);
+//}
 
 #include <llapi/event/player/PlayerJoinEvent.h>
 #include <llapi/event/EventManager.h>
