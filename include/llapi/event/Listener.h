@@ -31,11 +31,11 @@ enum Priority : uint8_t {
  */
 template <typename EventType>
 class Listener {
-    LL_RO_MEMBER(int, id, getId)
-    LL_RW_MEMBER(Priority, priority, getPriority, setPriority)
-    LL_RO_MEMBER(HMODULE, plugin, getPlugin)
-    LL_RO_MEMBER(std::function<void(EventType&)>, callback, getCallback)
-    LL_RW_MEMBER(int64_t, timing, getTiming, setTiming)
+    LL_RO_MEMBER(int, id, getId);
+    LL_RW_MEMBER(Priority, priority, getPriority, setPriority);
+    LL_RO_MEMBER(HMODULE, plugin, getPlugin);
+    LL_RO_MEMBER(std::function<void(EventType&)>, callback, getCallback);
+    LL_RW_MEMBER(int64_t, timing, getTiming, setTiming);
 
     friend class EventManager<EventType>;
 

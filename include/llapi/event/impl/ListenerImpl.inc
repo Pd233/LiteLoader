@@ -1,7 +1,7 @@
 /**
-* @brief This file is the implementation of the event listener.
-* @note Only LiteLoader itself should include this file in the source code of event.
-*/
+ * @brief This file is the implementation of the event listener.
+ * @note Only LiteLoader itself should include this file in the source code of event.
+ */
 
 #include <liteloader/LiteLoader.h>
 
@@ -52,22 +52,22 @@ inline void logEventError(const std::string& msg, const std::string& detail, con
 } // namespace detail
 
 template <typename EventType>
-LL_GETTER_IMPL(Listener<EventType>, int, id, getId)
+LL_GETTER_IMPL(Listener<EventType>, int, id, getId);
 
 template <typename EventType>
-LL_GETTER_IMPL(Listener<EventType>, Priority, priority, getPriority)
+LL_GETTER_IMPL(Listener<EventType>, Priority, priority, getPriority);
 
 template <typename EventType>
-LL_SETTER_IMPL(Listener<EventType>, Priority, priority, setPriority)
+LL_SETTER_IMPL(Listener<EventType>, Priority, priority, setPriority);
 
 template <typename EventType>
-LL_GETTER_IMPL(Listener<EventType>, HMODULE, plugin, getPlugin)
+LL_GETTER_IMPL(Listener<EventType>, HMODULE, plugin, getPlugin);
 
 template <typename EventType>
-LL_GETTER_IMPL(Listener<EventType>, std::function<void(EventType&)>, callback, getCallback)
+LL_GETTER_IMPL(Listener<EventType>, std::function<void(EventType&)>, callback, getCallback);
 
 template <typename EventType>
-LL_GETTER_IMPL(Listener<EventType>, int64_t, timing, getTiming)
+LL_GETTER_IMPL(Listener<EventType>, int64_t, timing, getTiming);
 
 template <typename EventType>
 LL_SETTER_IMPL(Listener<EventType>, int64_t, timing, setTiming)
