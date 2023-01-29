@@ -1,4 +1,4 @@
-#include <llapi/event/block/ProjectileHitBlockEvent.h>
+#include <llapi/event/entity/ProjectileHitBlockEvent.h>
 #include <llapi/event/EventManager.h>
 
 #include <llapi/mc/BlockSource.hpp>
@@ -11,7 +11,7 @@
 #include <llapi/event/impl/ListenerImpl.inc>
 
 namespace ll::event {
-namespace block {
+namespace entity {
 
 ProjectileHitBlockEvent::ProjectileHitBlockEvent(BlockInstance const& blockInstance, Actor* source)
 : blockInstance(blockInstance), source(source) {}
@@ -19,18 +19,18 @@ ProjectileHitBlockEvent::ProjectileHitBlockEvent(BlockInstance const& blockInsta
 LL_GETTER_IMPL(ProjectileHitBlockEvent, BlockInstance, blockInstance, getBlockInstance);
 LL_GETTER_IMPL(ProjectileHitBlockEvent, Actor*, source, getSource);
 
-} // namespace block
+} // namespace entity
 
-template class Event<block::ProjectileHitBlockEvent>;
-template class Listener<block::ProjectileHitBlockEvent>;
-template class EventManager<block::ProjectileHitBlockEvent>;
+template class Event<entity::ProjectileHitBlockEvent>;
+template class Listener<entity::ProjectileHitBlockEvent>;
+template class EventManager<entity::ProjectileHitBlockEvent>;
 
 } // namespace ll::event
 
 TInstanceHook(void, "?onProjectileHit@Block@@QEBAXAEAVBlockSource@@AEBVBlockPos@@AEBVActor@@@Z", Block,
               BlockSource* blockSource, BlockPos* blockPos, Actor* actor) {
 
-    using ll::event::block::ProjectileHitBlockEvent;
+    using ll::event::entity::ProjectileHitBlockEvent;
     using EventManager = ll::event::EventManager<ProjectileHitBlockEvent>;
 
     // Exclude default position BlockPos::Zero

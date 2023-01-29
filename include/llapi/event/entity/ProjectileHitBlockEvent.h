@@ -3,7 +3,7 @@
 #include "llapi/mc/Actor.hpp"
 #include "llapi/utils/AccessorMacro.h"
 
-namespace ll::event::block {
+namespace ll::event::entity {
 /**
  * @brief Projectile hit block event.
  */
@@ -15,4 +15,4 @@ class ProjectileHitBlockEvent : public Event<ProjectileHitBlockEvent> {
     LL_DELETE_COPY(ProjectileHitBlockEvent);
     LL_DELETE_MOVE(ProjectileHitBlockEvent);
 };
-} // namespace ll::event::block
+} // namespace ll::event::entity
