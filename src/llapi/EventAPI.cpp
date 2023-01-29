@@ -15,6 +15,7 @@
 #include "llapi/mc/CommandContext.hpp"
 #include "llapi/mc/CommandOrigin.hpp"
 #include "llapi/mc/ConnectionRequest.hpp"
+#include "llapi/mc/ChangeDimensionRequest.hpp"
 #include "llapi/mc/GameMode.hpp"
 #include "llapi/mc/HitResult.hpp"
 #include "llapi/mc/ItemActor.hpp"
@@ -333,10 +334,13 @@ TClasslessInstanceHook(void, "?sendLoginMessageLocal@ServerNetworkHandler@@QEAAX
     return original(this, Ni, a3, sp);
 }
 
-
+#include <llapi/event/player/PlayerJoinEvent.h>
+#include <llapi/event/EventManager.h>
 /////////////////// PlayerJoin ///////////////////
 TInstanceHook(bool, "?setLocalPlayerAsInitialized@ServerPlayer@@QEAAXXZ",
               ServerPlayer) {
+    ll::event::PlayerJoinEvent event(this);
+    ll::event::EventManager<ll::event::PlayerJoinEvent>::call(event);
     IF_LISTENED(PlayerJoinEvent) {
         PlayerJoinEvent ev{};
         ev.mPlayer = this;

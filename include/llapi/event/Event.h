@@ -1,9 +1,3 @@
-/**
- * @file include/llapi/event/Event.h
- * @brief Event base classes.
- * @author Jasonzyt(https://github.com/Jasonzyt), LiteLDev(https://github.com/LiteLDev)
- * @copyright Copyright (c) 2020-present LiteLDev.
- */
 #pragma once
 
 #include <list>
@@ -13,159 +7,12 @@
 
 #include <magic_enum.hpp>
 
+#include "llapi/event/Cancellable.h"
+#include "llapi/event/Listener.h"
 #include "llapi/utils/WinHelper.h"
+#include "llapi/LLAPI.h"
 
 namespace ll::event {
-
-namespace detail {
-/**
- * @brief Get global listener id and +1.
- * @return Current global listener id.
- */
-LIAPI int getCurrentListenerId() noexcept;
-/**
- * @brief Log event error.
- * @param msg Error message.
- * @param detail Error detail.
- * @param event Event name.
- * @param listenerId Listener id.
- * @param plugin Plugin handle.
- */
-LIAPI void logEventError(const std::string& msg, const std::string& detail, const std::string& event, int listenerId,
-                         HMODULE plugin);
-} // namespace detail
-
-/**
- * @brief Event priority enum.
- * @details The lower the priority, the earlier the event is executed.
- * @note Don't try forcing to be executed first.
- * @see EventManager::addListener
- */
-enum class Priority : uint8_t {
-    Lowest = 0,
-    Low = 1,
-    Normal = 2,
-    High = 3,
-    Highest = 4,
-    Monitor = 5
-};
-
-template <typename EventType>
-class EventManager;
-
-/**
- * @brief Event listener.
- * @tparam EventType Event type.
- */
-template <typename EventType>
-class Listener {
-
-    int id = -1;
-    Priority priority = Priority::Normal;
-    HMODULE plugin = nullptr;
-    std::function<void(EventType&)> callback;
-    int64_t timing = 0;
-
-    friend class EventManager<EventType>;
-
-public:
-    Listener(std::function<void(EventType&)> callback, Priority priority)
-    : callback(std::move(callback)), priority(priority) {
-        id = detail::getCurrentListenerId();
-        plugin = GetCurrentModule();
-    }
-
-    /**
-     * @brief Get plugin handle.
-     * @return The plugin handle.
-     */
-    [[nodiscard]] HMODULE getPlugin() const {
-        return plugin;
-    }
-
-    /**
-     * @brief Call the event.
-     * @param event Event instance to call.
-     */
-    void call(EventType& event);
-
-    /**
-     * @brief Unsubscribe the event.
-     */
-    void unsubscribe();
-
-    bool operator==(const Listener& other) const {
-        return id == other.id;
-    }
-
-    bool operator<(const Listener& other) const {
-        if (this->priority == other.priority) {
-            return this->id < other.id;
-        }
-        return magic_enum::enum_integer(this->priority) < magic_enum::enum_integer(other.priority);
-    }
-};
-
-/**
- * @brief Event manager class.
- * @tparam EventType Event type.
- * @details This class is used to manage event listeners.
- */
-template <typename EventType>
-class EventManager {
-    static std::set<Listener<EventType>> listenerList;
-
-public:
-    /**
-     * @brief Add an event listener.
-     * @param listener The listener instance to add.
-     */
-    static void addListener(const Listener<EventType>& listener) {
-        if (listener.priority > Priority::Monitor) {
-            listener->priority = Priority::Normal;
-        }
-        listenerList.insert(listener);
-    }
-
-    /**
-     * @brief Remove an event listener.
-     * @param listener The listener to remove.
-     */
-    static void removeListener(const Listener<EventType>& listener) {
-        listenerList.remove(listener);
-    }
-
-    /**
-     * @brief Get the listener by id.
-     * @param id The listener id.
-     */
-    static std::optional<Listener<EventType>> getListener(int id) noexcept {
-        auto res = std::find_if(listenerList.begin(), listenerList.end(),
-                                [id](const Listener<EventType>& listener) { return listener.id == id; });
-        if (res != listenerList.end()) {
-            return *res;
-        }
-        return std::nullopt;
-    }
-
-    /**
-     * @brief Get if the event has listeners.
-     * @return True if the event has listeners.
-     */
-    [[nodiscard]] static bool hasListener() noexcept {
-        return !listenerList.empty();
-    }
-
-    /**
-     * @brief Call the event.
-     * @param event Event instance to call.
-     */
-    static void call(EventType& event) {
-        for (auto& listener : listenerList) {
-            listener.call(event);
-        }
-    }
-};
 
 /**
  * @brief Event base class.
@@ -189,116 +36,26 @@ public:
      * });
      * @endcode
      */
-    static Listener<EventType> subscribe(const std::function<void(EventType&)>& callback,
-                                         Priority priority = Priority::Normal) {
-        Listener<EventType> listener(callback, priority);
-        subscribe(listener);
-        return listener;
-    }
+    LIAPI static Listener<EventType> subscribe(const std::function<void(EventType&)>& callback,
+                                               Priority priority = Priority::Normal);
 
     /**
      * @brief Subscribe the event.
      * @param listener The listener instance to subscribe.
      */
-    static void subscribe(const Listener<EventType>& listener) {
-        EventManager<EventType>::addListener(std::move(listener));
-    }
+    LIAPI static void subscribe(const Listener<EventType>& listener);
 
     /**
      * @brief Unsubscribe the event.
      * @param listener The listener instance to unsubscribe.
      */
-    static void unsubscribe(const Listener<EventType>& listener) {
-        EventManager<EventType>::removeListener(listener);
-    }
+    LIAPI static void unsubscribe(const Listener<EventType>& listener);
 
     /**
      * @brief Unsubscribe the event by id.
      * @param id The listener id.
      */
-    static void unsubscribe(int listenerId) noexcept {
-        auto listener = EventManager<EventType>::getListener(listenerId);
-        if (listener) {
-            unsubscribe(*listener);
-        }
-    }
+    LIAPI static void unsubscribe(int listenerId) noexcept;
 };
-
-/**
- * @brief Cancellable event base class.
- * @tparam EventType Event type.
- */
-template <typename EventType>
-class CancellableEvent : public Event<EventType> {
-private:
-    bool cancelled = false;
-
-public:
-    /**
-     * @brief Get if the event is cancelled.
-     * @return True if the event is cancelled.
-     */
-    [[nodiscard]] bool isCancelled() const {
-        return cancelled;
-    }
-
-    /**
-     * @brief Set if the event is cancelled.
-     * @param cancelled True if the event is cancelled.
-     */
-    void setCancelled(bool cancelled) {
-        this->cancelled = cancelled;
-    }
-
-    /**
-     * @brief Cancel the event.
-     */
-    void cancel() {
-        cancelled = true;
-    }
-};
-
-template <typename EventType>
-void Listener<EventType>::call(EventType& event) {
-    if (priority >= Priority::Monitor) {
-        EventType copy = event; // Avoid modifying the original event
-        try {
-            auto start = std::chrono::system_clock::now();
-            callback(copy);
-            auto end = std::chrono::system_clock::now();
-            this->timing = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-        } catch (const seh_exception& e) {
-            detail::logEventError("SEH Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
-        } catch (const std::exception& e) {
-            detail::logEventError("C++ Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
-        } catch (...) {
-            detail::logEventError("C++ Exception Occurs!", "", typeid(EventType).name(), id, plugin);
-        }
-        if constexpr (std::is_base_of_v<CancellableEvent<EventType>, EventType>) {
-            event.setCancelled(copy.isCancelled());
-        }
-        return;
-    }
-    try {
-        auto start = std::chrono::system_clock::now();
-        callback(event);
-        auto end = std::chrono::system_clock::now();
-        this->timing = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-    } catch (const seh_exception& e) {
-        detail::logEventError("SEH Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
-    } catch (const std::exception& e) {
-        detail::logEventError("C++ Exception Occurs:", e.what(), typeid(EventType).name(), id, plugin);
-    } catch (...) {
-        detail::logEventError("C++ Exception Occurs!", "", typeid(EventType).name(), id, plugin);
-    }
-}
-
-template <typename EventType>
-void Listener<EventType>::unsubscribe() {
-    if (id != -1) {
-        EventType::unsubscribe(*this);
-        id = -1;
-    }
-}
 
 } // namespace ll::event
